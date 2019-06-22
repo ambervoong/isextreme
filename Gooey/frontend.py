@@ -1,5 +1,7 @@
+import scrape; #here i dunno how to import
 import sys;
 import logging;
+import pandas;
 
 from PyQt5.QtWidgets import (
         QWidget,
@@ -14,6 +16,8 @@ from PyQt5.QtWidgets import (
         QLineEdit,
         QPlainTextEdit,
         QDialog,
+        QFileDialog,
+        QToolButton,
         )
 
 from PyQt5.QtCore import *
@@ -40,29 +44,83 @@ class MyDialog(QDialog, QPlainTextEdit):
 
         logTextBox = QTextEditLogger(self)
         # You can format what is printed to text box
-        logTextBox.setFormatter(logging.Formatter('%(asctime)s - %(levelname)s - %(message)s'))
+        logTextBox.setFormatter(logging.Formatter('%(message)s'))
         logging.getLogger().addHandler(logTextBox)
         # You can control the logging level
         logging.getLogger().setLevel(logging.DEBUG)
 
         self._button = QPushButton(self)
         self._button.setText('Test Me')
+        self._trial= QPushButton(self)
+        self._trial.setText('Add Me')
 
         layout = QVBoxLayout()
         # Add the new logging box widget to the layout
         layout.addWidget(logTextBox.widget)
         layout.addWidget(self._button)
+        layout.addWidget(self._trial)
         self.setLayout(layout)
+
+        #test
+        self.maxTerm = -1 
 
         # Connect signal to slot
         self._button.clicked.connect(self.test)
+        self._trial.clicked.connect(self.trial)
 
-    def test(self):
-        logging.debug('damn, a bug')
-        logging.info('something to remember')
-        logging.warning('that\'s not right')
-        logging.error('foobar')
+    def trial(self):
+        logging.error("Trial Testrun Alpha")
 
+    # packs the row into a dictonary
+    def packageRow(self, csvVar, row):
+        ret_dic = {}
+        ret_dic["tweet"] = csvVar["tweet"].iloc[row]
+        ret_dic["translated"] = csvVar["translated"].iloc[row]
+        ret_dic["date"] = csvVar["date"].iloc[row]
+        ret_dic["time"] = csvVar["time"].iloc[row]
+        ret_dic["username"] = csvVar["username"].iloc[row]
+        ret_dic["label"] = csvVar["label"].iloc[row]
+        try:
+            if (int(ret_dic["label"]) == 0):
+                ret_dic["customlabel"] = "No Threat"
+            else:
+                ret_dic["customlabel"] = "Pro-ISIS"
+        except ValueError as e:
+            print("Labelling Error: row " + str(row) +" " + str(e));
+            ret_dic["customlabel"] = "ERROR"
+        return ret_dic
+
+    def setMaxTerm(self, maxT):
+        self.maxTerm = maxT
+
+    def test(self, maxTerm, searchTerm):
+
+        PATHFILE = "./translated2_test.csv"
+        #PATHFILE = "./outputs/results/results.csv"
+        #csvBook = pandas.read_csv(PATHFILE, encoding = "ISO-8859-1")
+
+        try:
+        #here uncomment this bit
+            #scrape.start(searchTerm)
+            csvBook = pandas.read_csv(PATHFILE, encoding = "utf-8")
+        except:
+            print("ERROR")
+            logging.error("READ ERROR, unable to read the csv file, likely an error has occured with scraping")
+            return
+
+        row = 0
+        logging.error("Hashtag: " + searchTerm + "\n")
+        rowVar = self.packageRow(csvBook, 0)
+        while len(rowVar["tweet"]) != 0:
+            if row == maxTerm: break
+            print(row)
+            logging.error(str(row) + ". Status: " + rowVar["customlabel"])
+            logging.error("User: " + rowVar["username"])
+            logging.info(rowVar["date"] + ", " + rowVar["time"])
+            logging.info("Tweet: " + rowVar["tweet"])
+            logging.error("Translated: " + rowVar["translated"] + "\n")
+            row = row + 1
+            rowVar = self.packageRow(csvBook, row)
 
 # note: socketing is not implemented
 # no idea how the stuff that goes into the boxes
@@ -74,60 +132,72 @@ class Tab1(QWidget):
 
     def initUI(self):
         # Create first tab
-        #layout = QGridLayout(self)
         layout = QVBoxLayout(self)
         hbox1 = QHBoxLayout()
         hbox2 = QHBoxLayout()
         hbox3 = QHBoxLayout()
+        hbox4 = QHBoxLayout()
         layout.addLayout(hbox1)
         layout.addLayout(hbox2)
         layout.addLayout(hbox3)
+        layout.addLayout(hbox4)
 
         # first component
         # placeholder component, will find a use for this
         vbox1 = QVBoxLayout()
         buttonLabel = QLabel("Summon")
         execBtn = QPushButton("PyQt5 button")
+#        execBtn.clicked.connect(self.dlg.test)
+        execBtn.clicked.connect(self.exect)
         vbox1.addWidget(buttonLabel)
         vbox1.addWidget(execBtn)
 
         # hash tag to be used as search term here
         vbox2 = QVBoxLayout()
         hashLabel = QLabel("Enter Hashtag")
-        hashInput = QLineEdit()
-        hashInput.setPlaceholderText("@who")
+        self.hashInput = QLineEdit()
+        self.hashInput.setPlaceholderText("@who")
         vbox2.addWidget(hashLabel)
-        vbox2.addWidget(hashInput)
+        vbox2.addWidget(self.hashInput)
 
         # optional: like the max number of
         # twitter tweets to take from API
         # i assume the API has this option
         vbox3 = QVBoxLayout()
         limitLabel = QLabel("Max Search Term")
-        limitInput = QLineEdit()
+        self.limitInput = QLineEdit()
 #        limitInput.resize(500,300)
         onlyInt = QIntValidator(1, 9999)
-        limitInput.setValidator(onlyInt)
+        self.limitInput.setValidator(onlyInt)
         vbox3.addWidget(limitLabel)
-        vbox3.addWidget(limitInput)
+        vbox3.addWidget(self.limitInput)
+
 
 # this is the output display
 # to show what tweets are extremis
         vbox4 = QVBoxLayout()
         bufferLabel = QLabel("")
         dlgLabel = QLabel("Readout")
-        dlg = MyDialog()
+        self.dlg = MyDialog()
         vbox4.addWidget(bufferLabel)
         vbox4.addWidget(dlgLabel)
-        vbox4.addWidget(dlg)
-
+        vbox4.addWidget(self.dlg)
 
         hbox2.addLayout(vbox1)
         hbox2.addLayout(vbox2)
         hbox2.addLayout(vbox3)
-        hbox3.addLayout(vbox4)
+        hbox4.addLayout(vbox4)
 
         self.setLayout(layout)
+
+    # calls logger with parameters
+    def exect(self):
+        inputVal = self.limitInput.text()
+        maxTerm = -1
+        if len(inputVal) > 0:
+            maxTerm = int(inputVal)
+        self.dlg.test(maxTerm, self.hashInput.text())
+
 
 class Example(QWidget):
     def __init__(self):
@@ -142,7 +212,7 @@ class Example(QWidget):
         self.tabs = QTabWidget()
 
         # a separate widget extracted out for neatness
-        self.tab1 = Tab1() 
+        self.tab1 = Tab1()
         self.tab2 = QWidget()
         self.tabs.resize(300,200)
 
