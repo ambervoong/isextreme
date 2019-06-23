@@ -203,8 +203,9 @@ def predict(pathname):
     # Output original tweet + predicted label
     predicted = pd.read_csv(DATA_DIR + '/tweets.csv')
     predicted["predicted"] = preds
-
     predicted.to_csv('./outputs/results/results.csv', encoding='utf-8-sig')
+    return predicted
+
 # Computing result statistics
 """
 result = compute_metrics(TASK_NAME, all_label_ids.numpy(), preds) # Calculate results

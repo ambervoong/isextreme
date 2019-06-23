@@ -34,6 +34,7 @@ def scrape(keyword):
 
 # use scrape(input_word) to scrape twitter for the data.
 def start(keyword):
+       print("Your search term is: " + keyword)
        DATA_PATH = './input_data/tweets.csv'
        FOLDER = './input_data'
        # Remove any old tweets.csv
@@ -69,7 +70,8 @@ def start(keyword):
        dataprocessing.change_to_tsv(DATA_PATH, FOLDER)
        print("Preprocessing complete. Processing...")
        # Put it into BERT. >> Remember to make BERT save the predictions somewhere
-       bert_eval.predict(FOLDER)
+       predicted = bert_eval.predict(FOLDER)
        print("View results at ./outputs/results/results.csv")
+       return predicted
 
 
