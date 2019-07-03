@@ -95,7 +95,7 @@ class MyDialog(QDialog, QPlainTextEdit):
         self.maxTerm = maxT
 
     def test(self, maxTerm, searchTerm):
-
+        if len(searchTerm) <= 0: return
         #PATHFILE = "./translated2_test.csv"
         PATHFILE = "./outputs/results/results.csv"
         #csvBook = pandas.read_csv(PATHFILE, encoding = "ISO-8859-1")
@@ -172,7 +172,7 @@ class Tab1(QWidget):
         # first component
         # placeholder component, will find a use for this
         vbox1 = QVBoxLayout()
-        buttonLabel = QLabel("Summon")
+        buttonLabel = QLabel("Scrape & Analyse")
         execBtn = QPushButton("Search")
 #        execBtn.clicked.connect(self.dlg.test)
         execBtn.clicked.connect(self.exect)
