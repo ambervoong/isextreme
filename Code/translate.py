@@ -30,10 +30,12 @@ def translate(pathfile):
                     uncorrupted.to_csv(SAVE, encoding='utf-8-sig')
                     print("Write Success " + str(i) + ": " + uncorrupted["translated"].iloc[i])
 
+                sleep(1.5)
             else:
                 print("No translation required: ")
                 print(uncorrupted["translated"][i])
-            sleep(1.5)
+
+            # sleep(1.5) if you're going over 20 tweets then put sleep here so you don't get banned.
         except Exception as e:
             print("EXCEPTION: " + uncorrupted["translated"][i])
             print(e)
@@ -43,3 +45,5 @@ def translate(pathfile):
 
 
     uncorrupted.to_csv(SAVE,encoding='utf-8-sig') # thisworks
+
+

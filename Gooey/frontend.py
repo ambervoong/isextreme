@@ -101,7 +101,7 @@ class MyDialog(QDialog, QPlainTextEdit):
         #csvBook = pandas.read_csv(PATHFILE, encoding = "ISO-8859-1")
 
         try:
-            scrape.start(searchTerm)
+            scrape.start(maxTerm, searchTerm)
             csvBook = pandas.read_csv(PATHFILE, encoding="utf-8-sig")
         except:
             print("ERROR")
@@ -134,7 +134,7 @@ class MyDialog(QDialog, QPlainTextEdit):
 
         options = QFileDialog.Options()
         options |= QFileDialog.DontUseNativeDialog
-        fileName, extension = QFileDialog.getSaveFileName(self, "QFileDialog.getSaveFileName()", "",
+        fileName, extension = QFileDialog.getSaveFileName(self, "Save to File", "",
                         "CSV UTF-8 (*.csv);;All Files (*);;Text Files (*.txt)",
                                                   options=options)
         # Save results.csv to any folder the user chooses
@@ -170,27 +170,28 @@ class Tab1(QWidget):
         layout.addLayout(hbox4)
 
         # first component
-        # placeholder component, will find a use for this
-        vbox1 = QVBoxLayout()
-        buttonLabel = QLabel("Scrape & Analyse")
+
+        vbox1 = QHBoxLayout()
+        #buttonLabel = QLabel("Scrape & Analyse")
         execBtn = QPushButton("Search")
-#        execBtn.clicked.connect(self.dlg.test)
+        #execBtn.setStyleSheet(  "background-position: bottom;");
+
+        #        execBtn.clicked.connect(self.dlg.test)
         execBtn.clicked.connect(self.exect)
-        vbox1.addWidget(buttonLabel)
+        #vbox1.addWidget(buttonLabel)
         vbox1.addWidget(execBtn)
 
         # search term to be used as search term here
-        vbox2 = QVBoxLayout()
+        vbox2 = QHBoxLayout()
         hashLabel = QLabel("Enter Search Term")
         self.hashInput = QLineEdit()
-        self.hashInput.setPlaceholderText("#___")
+        self.hashInput.setPlaceholderText("#_____")
         vbox2.addWidget(hashLabel)
         vbox2.addWidget(self.hashInput)
 
         # optional: like the max number of
         # twitter tweets to take from API
-        # i assume the API has this option
-        vbox3 = QVBoxLayout()
+        vbox3 = QHBoxLayout()
         limitLabel = QLabel("Max Searches")
         self.limitInput = QLineEdit()
 #        limitInput.resize(500,300)
@@ -211,9 +212,9 @@ class Tab1(QWidget):
         vbox4.addWidget(dlgLabel)
         vbox4.addWidget(self.dlg)
 
-        hbox2.addLayout(vbox1)
         hbox2.addLayout(vbox2)
         hbox2.addLayout(vbox3)
+        hbox2.addLayout(vbox1)
         hbox4.addLayout(vbox4)
 
         self.setLayout(layout)
@@ -221,7 +222,7 @@ class Tab1(QWidget):
     # calls logger with parameters
     def exect(self):
         inputVal = self.limitInput.text()
-        maxTerm = -1
+        maxTerm = int(self.limitInput.text())
         if len(inputVal) > 0:
             maxTerm = int(inputVal)
         self.dlg.test(maxTerm, self.hashInput.text())

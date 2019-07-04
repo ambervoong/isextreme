@@ -19,7 +19,7 @@ import logging
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-def scrape(keyword):
+def scrape(maxTerm, keyword):
        c = twint.Config()
        # c.Username = "twitter" # If you wanted to do username search.
        c.Search = keyword
@@ -29,11 +29,11 @@ def scrape(keyword):
                             # After preprocessing, data has add. columns: translated, cleaned
        # Name of the directory
        c.Output = "input_data" # Output directory name. tweets will be in this folder as 'tweets.csv'
-       c.Limit = 20 # Limited to scraping 2000 tweets for now, 800 for testing
+       c.Limit = maxTerm
        twint.run.Search(c)
-
 # use scrape(input_word) to scrape twitter for the data.
-def start(keyword):
+
+def start(maxTerm, keyword):
        print("Your search term is: " + keyword)
        DATA_PATH = './input_data/tweets.csv'
        FOLDER = './input_data'
@@ -46,7 +46,7 @@ def start(keyword):
 
        # Scrape twitter for tweets and save it in input_data/tweets.csv
        print("Scraping...")
-       scrape(keyword) # fakeuseragent error always happens here; it does not affect function.
+       scrape(maxTerm, keyword) # fakeuseragent error always happens here; it does not affect function.
        sleep(2) # Give time for the file to be created
 
        # Assert there is a new tweets.csv
@@ -73,5 +73,3 @@ def start(keyword):
        predicted = bert_eval.predict(FOLDER)
        print("View results at ./outputs/results/results.csv")
        return predicted
-
-
