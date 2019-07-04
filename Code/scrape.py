@@ -13,6 +13,8 @@ import cleaning
 import dataprocessing
 import bert_eval
 
+import SVCmodel
+
 
 # OPTIONAL: if you want to have more information on what's happening, activate the logger as follows
 import logging
@@ -37,6 +39,7 @@ def start(maxTerm, keyword):
        print("Your search term is: " + keyword)
        DATA_PATH = './input_data/tweets.csv'
        FOLDER = './input_data'
+       SAVE_PATH = './outputs/results/results.csv'
        # Remove any old tweets.csv
        try:
               os.remove('./input_data/tweets.csv')
@@ -55,21 +58,28 @@ def start(maxTerm, keyword):
 
        # Translate tweet column.
        translate.translate(DATA_PATH)
-       print("Translation complete. Cleaning in progres...")
+       print("Translation complete. Cleaning in progress...")
        # Clean the data
        cleaning.clean(DATA_PATH)
-       print("Cleaning complete. Converting to tsv...")
-       # Change it into correctly formatted .tsv
-       # In case there is already an old dev.tsv
-       try:
-              os.remove('./input_data/dev.tsv')
-              print("Removed dev.tsv")
-       except OSError as e:
-              pass
 
-       dataprocessing.change_to_tsv(DATA_PATH, FOLDER)
-       print("Preprocessing complete. Processing...")
-       # Put it into BERT. >> Remember to make BERT save the predictions somewhere
-       predicted = bert_eval.predict(FOLDER)
+       # # for BERT model
+       # print("Cleaning complete. Converting to tsv...")
+       # # Change it into correctly formatted .tsv
+       # # In case there is already an old dev.tsv
+       # try:
+       #        os.remove('./input_data/dev.tsv')
+       #        print("Removed dev.tsv")
+       # except OSError as e:
+       #        pass
+       #
+       # dataprocessing.change_to_tsv(DATA_PATH, FOLDER)
+       # print("Preprocessing complete. Processing...")
+       # # Put it into BERT. >> Remember to make BERT save the predictions somewhere
+       # predicted = bert_eval.predict(FOLDER)
+
+       # LinearSVC model
+       print("Cleaning complete. Predicting...")
+       processed = SVCmodel.generate(DATA_PATH)
+       predicted = SVCmodel.predict(processed, DATA_PATH, SAVE_PATH)
        print("View results at ./outputs/results/results.csv")
        return predicted
