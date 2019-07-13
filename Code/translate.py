@@ -2,7 +2,7 @@ import pandas as pd
 from time import sleep
 from googletrans import Translator
 
-def translate(pathfile):
+def translate(pathfile, pbarData):
     PATHFILE = pathfile
     SAVE = pathfile
     STARTROW = 0
@@ -41,6 +41,7 @@ def translate(pathfile):
             print(e)
             print()
             continue
+        pbarData.setMeasurements(i, (ENDROW - STARTROW + 1))
         print() # newline makes it easier to see
 
 

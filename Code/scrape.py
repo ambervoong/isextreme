@@ -11,7 +11,7 @@ from time import sleep
 import translate
 import cleaning
 import dataprocessing
-import bert_eval
+#import bert_eval
 
 import SVCmodel
 
@@ -35,7 +35,7 @@ def scrape(maxTerm, keyword):
        twint.run.Search(c)
 # use scrape(input_word) to scrape twitter for the data.
 
-def start(maxTerm, keyword):
+def start(maxTerm, keyword, pbarData):
        print("Your search term is: " + keyword)
        DATA_PATH = './input_data/tweets.csv'
        FOLDER = './input_data'
@@ -55,9 +55,10 @@ def start(maxTerm, keyword):
        # Assert there is a new tweets.csv
        assert os.path.exists(DATA_PATH), "tweets.csv does not exist."
        print("Scraping finished. Translation being performed...")
+       pbarData.incrementStage()
 
        # Translate tweet column.
-       translate.translate(DATA_PATH)
+       translate.translate(DATA_PATH, pbarData)
        print("Translation complete. Cleaning in progress...")
        # Clean the data
        cleaning.clean(DATA_PATH)
