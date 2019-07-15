@@ -1,3 +1,4 @@
+import relaydata
 import scrape
 import sys
 import re
@@ -19,6 +20,7 @@ from PyQt5.QtWidgets import (
         QDialog,
         QFileDialog,
         QToolButton,
+        QProgressBar,
         )
 
 from PyQt5.QtCore import *
@@ -94,14 +96,15 @@ class MyDialog(QDialog, QPlainTextEdit):
     def setMaxTerm(self, maxT):
         self.maxTerm = maxT
 
-    def test(self, maxTerm, searchTerm):
+    def test(self, maxTerm, searchTerm, pbarData):
         if len(searchTerm) <= 0: return
         #PATHFILE = "./translated2_test.csv"
         PATHFILE = "./outputs/results/results.csv"
         #csvBook = pandas.read_csv(PATHFILE, encoding = "ISO-8859-1")
 
+        pbarData.reset()
         try:
-            scrape.start(maxTerm, searchTerm)
+            scrape.start(maxTerm, searchTerm, pbarData)
             csvBook = pandas.read_csv(PATHFILE, encoding="utf-8-sig")
         except:
             print("ERROR")
@@ -123,6 +126,7 @@ class MyDialog(QDialog, QPlainTextEdit):
             logging.error("Translated: " + rowVar["translated"] + "\n")
             row = row + 1
             rowVar = self.packageRow(csvBook, row)
+        pbarData.complete()
 
     def saveFileDialog(self):
 
@@ -153,8 +157,10 @@ class MyDialog(QDialog, QPlainTextEdit):
 # no idea how the stuff that goes into the boxes
 # and the buttons would work yet since stub isnt ready
 class Tab1(QWidget):
-    def __init__(self):
+    def __init__(self, pbarData):
         super().__init__()
+        pbarData.registerObserver(self)
+        self.pbarData = pbarData
         self.initUI();
 
     def initUI(self):
@@ -164,10 +170,12 @@ class Tab1(QWidget):
         hbox2 = QHBoxLayout()
         hbox3 = QHBoxLayout()
         hbox4 = QHBoxLayout()
+        hbox5 = QHBoxLayout()
         layout.addLayout(hbox1)
         layout.addLayout(hbox2)
         layout.addLayout(hbox3)
         layout.addLayout(hbox4)
+        layout.addLayout(hbox5)
 
         # first component
 
@@ -213,6 +221,10 @@ class Tab1(QWidget):
         vbox4.addWidget(dlgLabel)
         vbox4.addWidget(self.dlg)
 
+        self.pbar = QProgressBar(self)
+        self.step = 0
+        hbox5.addWidget(self.pbar)
+
         hbox2.addLayout(vbox2)
         hbox2.addLayout(vbox3)
         hbox2.addLayout(vbox1)
@@ -226,7 +238,12 @@ class Tab1(QWidget):
         maxTerm = int(self.limitInput.text())
         if len(inputVal) > 0:
             maxTerm = int(inputVal)
-        self.dlg.test(maxTerm, self.hashInput.text())
+        self.dlg.test(maxTerm, self.hashInput.text(), self.pbarData)
+
+    def update(self, pbarData):
+        self.step = pbarData.progressReport()
+        self.pbar.setValue(self.step)
+
 
 
 class Example(QWidget):
@@ -242,7 +259,8 @@ class Example(QWidget):
         self.tabs = QTabWidget()
 
         # a separate widget extracted out for neatness
-        self.tab1 = Tab1()
+        pbarData = relaydata.ProgressRelay()
+        self.tab1 = Tab1(pbarData)
         self.tab2 = QWidget()
         self.tabs.resize(300,200)
 
