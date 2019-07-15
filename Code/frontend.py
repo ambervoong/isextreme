@@ -1,4 +1,5 @@
 import relaydata
+import visual
 import scrape
 import sys
 import re
@@ -21,6 +22,7 @@ from PyQt5.QtWidgets import (
         QFileDialog,
         QToolButton,
         QProgressBar,
+        QComboBox
         )
 
 from PyQt5.QtCore import *
@@ -211,8 +213,8 @@ class Tab1(QWidget):
 
         vbox5 = QVBoxLayout()
 
-# this is the output display
-# to show what tweets
+        # this is the output display
+        # to show what tweets
         vbox4 = QVBoxLayout()
         bufferLabel = QLabel("")
         dlgLabel = QLabel("Readout")
@@ -244,6 +246,70 @@ class Tab1(QWidget):
         self.step = pbarData.progressReport()
         self.pbar.setValue(self.step)
 
+class Tab2(QWidget):
+    def __init__(self):
+        super().__init__()
+        self.initUI();
+
+    def initUI(self):
+        # Create first tab
+        layout = QVBoxLayout(self)
+        hbox1 = QHBoxLayout()
+        #layout.addLayout(hbox1)
+
+        vbox1 = QHBoxLayout()
+        vbox2 = QVBoxLayout()
+        vbox3 = QVBoxLayout()
+
+        # buttonLabel = QLabel("Scrape & Analyse")
+        self.mcBox = QComboBox() # Multiple Choice Box
+        self.mcBox.addItem("WordCloud")
+        self.mcBox.addItem("Generic Graph")
+
+        execBtn = QPushButton("Generate")
+        execBtn.clicked.connect(self.generate)
+
+        saveBtn = QPushButton("Save Plot")
+        saveBtn.clicked.connect(self.savePlot)
+        vbox1.addWidget(self.mcBox)
+        vbox1.addWidget(execBtn)
+
+        self.canvas = visual.PlotCanvas(self, width=5, height=4)
+        vbox2.addWidget(self.canvas)
+        vbox3.addWidget(saveBtn)
+        layout.addLayout(vbox1)
+        layout.addLayout(vbox2)
+        layout.addLayout(vbox3)
+        self.setLayout(layout)
+
+    def generate(self):
+        type = int(self.mcBox.currentIndex())
+        # Ensures that the previous plot is removed
+        self.canvas.figure.clear()
+
+        if type == 0: # WordCloud
+            self.canvas.plotWord()
+        elif type == 1:
+            self.canvas.plot()
+        self.show()
+
+    def savePlot(self):
+        options = QFileDialog.Options()
+        options |= QFileDialog.DontUseNativeDialog
+        fileName, extension = QFileDialog.getSaveFileName(self, "Save to File", "",
+                                                          "PNG (*.png);;All Files (*);;Text Files (*.txt)",
+                                                          options=options)
+        # Save plot to any folder the user chooses
+        try:
+            extension = re.search('\(([^)]+)', extension).group(1)
+            extension = extension.split('*')[1]
+
+            save_to = fileName + extension
+
+            self.canvas.figure.savefig(save_to, facecolor='k', bbox_inches='tight')
+            logging.error("Plot successfully saved")
+        except:
+            pass
 
 
 class Example(QWidget):
@@ -261,8 +327,8 @@ class Example(QWidget):
         # a separate widget extracted out for neatness
         pbarData = relaydata.ProgressRelay()
         self.tab1 = Tab1(pbarData)
-        self.tab2 = QWidget()
-        self.tabs.resize(300,200)
+        self.tab2 = Tab2()
+        self.tabs.resize(700,600)
 
         # Add tabs
         self.tabs.addTab(self.tab1, "Search")
@@ -272,7 +338,7 @@ class Example(QWidget):
         self.layout.addWidget(self.tabs)
         self.setLayout(self.layout)
 
-        self.setGeometry(300, 300,470,575)
+        self.setGeometry(600, 200, 870, 975)
         self.setWindowTitle('Nyarlathotep Alpha Test')
         # disables resizing
         self.setFixedSize(self.sizeHint())
