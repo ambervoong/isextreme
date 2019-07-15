@@ -1,6 +1,7 @@
 import pandas as pd
 from time import sleep
 from googletrans import Translator
+from textblob import TextBlob
 
 def translate(pathfile, pbarData):
     PATHFILE = pathfile
@@ -17,7 +18,8 @@ def translate(pathfile, pbarData):
         try:
             print("Begin: " + str(i))
             original = uncorrupted["translated"].iloc[i]
-            if tr.detect(original).lang != 'en':
+            original_blob = TextBlob(original)
+            if original_blob.detect_language() != 'en':
                 translated = tr.translate(uncorrupted["translated"].iloc[i]).text
                 same = original == translated
 
