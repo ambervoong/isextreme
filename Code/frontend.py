@@ -201,9 +201,10 @@ class Tab1(QWidget):
         vbox3.addWidget(limitLabel)
         vbox3.addWidget(self.limitInput)
 
+        vbox5 = QVBoxLayout()
 
 # this is the output display
-# to show what tweets are extremis
+# to show what tweets
         vbox4 = QVBoxLayout()
         bufferLabel = QLabel("")
         dlgLabel = QLabel("Readout")
