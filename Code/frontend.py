@@ -14,6 +14,7 @@ from PyQt5.QtWidgets import (
         QGridLayout,
         QLabel,
         QTabWidget,
+        QTableWidget,
         QVBoxLayout,
         QHBoxLayout,
         QLineEdit,
@@ -46,7 +47,6 @@ class QTextEditLogger(logging.Handler):
 class MyDialog(QDialog, QPlainTextEdit):
     def __init__(self, parent=None):
         super().__init__(parent)
-
         logTextBox = QTextEditLogger(self)
         # You can format what is printed to text box
         logTextBox.setFormatter(logging.Formatter('%(message)s'))
@@ -100,7 +100,6 @@ class MyDialog(QDialog, QPlainTextEdit):
 
     def test(self, maxTerm, searchTerm, pbarData):
         if len(searchTerm) <= 0: return
-        #PATHFILE = "./translated2_test.csv"
         PATHFILE = "./outputs/results/results.csv"
         #csvBook = pandas.read_csv(PATHFILE, encoding = "ISO-8859-1")
 
@@ -210,7 +209,7 @@ class Tab1(QWidget):
         vbox3.addWidget(limitLabel)
         vbox3.addWidget(self.limitInput)
 
-        vbox5 = QVBoxLayout()
+        #vbox5 = QVBoxLayout()
 
         # this is the output display
         # to show what tweets
@@ -310,6 +309,31 @@ class Tab2(QWidget):
         except:
             pass
 
+class Tab3(QWidget):
+    def __init__(self):
+        super().__init__()
+        self.initUI();
+
+    def initUI(self):
+        # Create first tab
+        layout = QVBoxLayout(self)
+        hbox1 = QHBoxLayout()
+
+
+        vbox1 = QHBoxLayout()
+
+
+        tableBox = QTableWidget(5,7, self)
+
+        #saveBtn = QPushButton("Save Plot")
+        #saveBtn.clicked.connect(self.savePlot)
+        vbox1.addWidget(tableBox)
+
+
+        layout.addLayout(vbox1)
+
+        self.setLayout(layout)
+
 
 class Example(QWidget):
     def __init__(self):
@@ -327,11 +351,13 @@ class Example(QWidget):
         pbarData = relaydata.ProgressRelay()
         self.tab1 = Tab1(pbarData)
         self.tab2 = Tab2()
+        #self.tab3 = Tab3()
         self.tabs.resize(700,600)
 
         # Add tabs
         self.tabs.addTab(self.tab1, "Search")
         self.tabs.addTab(self.tab2, "Graphs")
+        #self.tabs.addTab(self.tab3, "QuickView")
 
         # Add tabs to widget
         self.layout.addWidget(self.tabs)
