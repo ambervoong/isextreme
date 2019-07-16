@@ -87,7 +87,7 @@ class MyDialog(QDialog, QPlainTextEdit):
         ret_dic["predicted"] = csvVar["predicted"].iloc[row]
         try:
             if (int(ret_dic["predicted"]) == 0):
-                ret_dic["customlabel"] = "No Threat"
+                ret_dic["customlabel"] = "Not Pro-ISIS"
             else:
                 ret_dic["customlabel"] = "Pro-ISIS"
         except ValueError as e:
@@ -121,10 +121,9 @@ class MyDialog(QDialog, QPlainTextEdit):
             if row == maxTerm: break
             if row >= max_row - 1: break # BUG-FIX for index error
             print(row)
-            logging.error(str(row) + ". Status: " + rowVar["customlabel"])
-            logging.error("User: " + rowVar["username"])
-            logging.info(rowVar["date"] + ", " + rowVar["time"])
-            logging.info("Tweet: " + rowVar["tweet"])
+            logging.error(str(row) + ". Detection: " + rowVar["customlabel"])
+            logging.error("User: " + rowVar["username"] + ", " + rowVar["date"] + ", " + rowVar["time"])
+            logging.info("Original: " + rowVar["tweet"])
             logging.error("Translated: " + rowVar["translated"] + "\n")
             row = row + 1
             rowVar = self.packageRow(csvBook, row)
@@ -269,14 +268,14 @@ class Tab2(QWidget):
         execBtn = QPushButton("Generate")
         execBtn.clicked.connect(self.generate)
 
-        saveBtn = QPushButton("Save Plot")
-        saveBtn.clicked.connect(self.savePlot)
+        #saveBtn = QPushButton("Save Plot")
+        #saveBtn.clicked.connect(self.savePlot)
         vbox1.addWidget(self.mcBox)
         vbox1.addWidget(execBtn)
 
         self.canvas = visual.PlotCanvas(self, width=5, height=4)
         vbox2.addWidget(self.canvas)
-        vbox3.addWidget(saveBtn)
+        #vbox3.addWidget(saveBtn)
         layout.addLayout(vbox1)
         layout.addLayout(vbox2)
         layout.addLayout(vbox3)
@@ -290,7 +289,7 @@ class Tab2(QWidget):
         if type == 0: # WordCloud
             self.canvas.plotWord()
         elif type == 1:
-            self.canvas.plot()
+            self.canvas.plotFreq()
         self.show()
 
     def savePlot(self):
@@ -332,7 +331,7 @@ class Example(QWidget):
 
         # Add tabs
         self.tabs.addTab(self.tab1, "Search")
-        self.tabs.addTab(self.tab2, "Bells")
+        self.tabs.addTab(self.tab2, "Graphs")
 
         # Add tabs to widget
         self.layout.addWidget(self.tabs)

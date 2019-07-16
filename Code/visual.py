@@ -25,12 +25,12 @@ class PlotCanvas(FigureCanvas):
         FigureCanvas.updateGeometry(self)
         # self.plot()
 
-    def plot(self):
+    def plotFreq(self):
         #self.axes = self.fig.add_subplot(111)
         data = [random.random() for i in range(25)]
         ax = self.figure.add_subplot(111)
         ax.plot(data, 'r-')
-        ax.set_title('PyQt Matplotlib Example')
+        ax.set_title('Demo Stats')
         self.draw()
 
     def plotWord(self): # Generate a wordcloud.
@@ -43,8 +43,8 @@ class PlotCanvas(FigureCanvas):
         word_cloud = WordCloud(width=1600, height=800,
                                font_path='./Symbola.ttf').generate(words)
 
-        ax = self.figure.add_subplot(111)
-        ax.imshow(word_cloud)
+        ax = self.figure.add_subplot()
+        ax.imshow(word_cloud, aspect='auto')
         ax.axis("off")
         #plt.imshow(word_cloud)
         #plt.axis("off")
