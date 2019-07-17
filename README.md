@@ -36,4 +36,4 @@ pip install aiohttp_socks
 ```
 Depending on your system and what you're using, you might have to use pip3 instead.
 
-Other things you may need: Python3, PyQT, numpy, pandas, etc. The errors will tell you if you have any missing dependencies.
+Other things you may need: Python3, PyQT, numpy, pandas, matplotlib, wordcloud etc. The errors will tell you if you have any missing dependencies.
