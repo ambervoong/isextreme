@@ -1,7 +1,7 @@
 # isextreme
 
 <p align="center"> 
-Team Nyarlathotep - Orbital Project
+  <b> Team Nyarlathotep - Orbital Project </b>
 </p> 
 
 <p align="center"> 
@@ -27,6 +27,7 @@ python3 frontend.py
 
 Troubleshooting
 - You might have to download some libraries for the program to work.
+- The progress bar is known to not work on MacOS, but the rest of the program works fine.
 
 ```
 pip install twint
