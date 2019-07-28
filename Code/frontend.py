@@ -200,10 +200,10 @@ class Tab1(QWidget):
         # optional: like the max number of
         # twitter tweets to take from API
         vbox3 = QHBoxLayout()
-        limitLabel = QLabel("Max Searches")
+        limitLabel = QLabel("Max Tweets to Scrape")
         self.limitInput = QLineEdit()
 #        limitInput.resize(500,300)
-        onlyInt = QIntValidator(1, 9999)
+        onlyInt = QIntValidator(1, 999)
         self.limitInput.setValidator(onlyInt)
         self.limitInput.setPlaceholderText("20")
         vbox3.addWidget(limitLabel)
@@ -243,7 +243,6 @@ class Tab1(QWidget):
     def update(self, pbarData):
         self.step = pbarData.progressReport()
         self.pbar.setValue(self.step)
-
 class Tab2(QWidget):
     def __init__(self):
         super().__init__()
